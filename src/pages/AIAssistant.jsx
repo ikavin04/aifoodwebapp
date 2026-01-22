@@ -229,9 +229,9 @@ const AIAssistant = () => {
       <Navbar />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-gradient-to-r from-primary to-orange-500 rounded-xl p-6 mb-6 text-white">
+        <div className="bg-gradient-to-r from-cherry to-olive rounded-xl p-6 mb-6 text-white">
           <h1 className="text-3xl font-bold mb-2">AI Food Assistant</h1>
-          <p className="text-orange-100">
+          <p className="text-butter">
             Just tell me what you're craving, and I'll find the best options for you!
           </p>
         </div>
@@ -246,7 +246,7 @@ const AIAssistant = () => {
               >
                 {message.sender === 'bot' && (
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-cherry flex items-center justify-center">
                       <Bot className="w-6 h-6 text-white" />
                     </div>
                   </div>
@@ -256,8 +256,8 @@ const AIAssistant = () => {
                   <div
                     className={`rounded-2xl px-4 py-3 ${
                       message.sender === 'user'
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-900'
+                        ? 'bg-cherry text-white'
+                        : 'bg-oat text-gray-900'
                     }`}
                   >
                     <p className="text-sm leading-relaxed">{message.text}</p>
@@ -279,10 +279,10 @@ const AIAssistant = () => {
 
             {loading && (
               <div className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-cherry flex items-center justify-center">
                   <Bot className="w-6 h-6 text-white" />
                 </div>
-                <div className="bg-gray-100 rounded-2xl px-4 py-3">
+                <div className="bg-oat rounded-2xl px-4 py-3">
                   <div className="flex gap-1">
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -298,7 +298,7 @@ const AIAssistant = () => {
                 {suggestions.map((suggestion) => (
                   <div
                     key={suggestion.id}
-                    className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl p-4 hover:shadow-md transition"
+                    className="bg-gradient-to-r from-butter to-oat border border-[#E5D5B7] rounded-xl p-4 hover:shadow-md transition"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -307,7 +307,7 @@ const AIAssistant = () => {
                           {getSuggestionLabel(suggestion.type)}
                         </span>
                       </div>
-                      <span className="text-2xl font-bold text-primary">
+                      <span className="text-2xl font-bold text-cherry">
                         ₹{suggestion.totalPrice}
                       </span>
                     </div>
@@ -331,7 +331,7 @@ const AIAssistant = () => {
 
                     <button
                       onClick={() => handleConfirmOrder(suggestion)}
-                      className="w-full bg-primary hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                      className="w-full bg-cherry hover:bg-[#5A0A14] text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
                     >
                       <Check className="w-5 h-5" />
                       Add to Cart
@@ -359,7 +359,7 @@ const AIAssistant = () => {
               <button
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
-                className="bg-primary hover:bg-orange-600 text-white p-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-cherry hover:bg-[#5A0A14] text-white p-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="w-6 h-6" />
               </button>

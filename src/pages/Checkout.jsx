@@ -82,7 +82,7 @@ const Checkout = () => {
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <MapPin className="w-6 h-6 text-primary" />
+                <MapPin className="w-6 h-6 text-cherry" />
                 Delivery Details
               </h2>
 
@@ -200,7 +200,7 @@ const Checkout = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 bg-primary hover:bg-orange-600 text-white font-semibold py-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-6 bg-cherry hover:bg-[#5A0A14] text-white font-semibold py-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Placing Order...' : `Place Order - ₹${totalAmount}`}
               </button>

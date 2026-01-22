@@ -19,7 +19,7 @@ const Cart = () => {
             <p className="text-gray-600 mb-8">Add some delicious food to get started!</p>
             <button
               onClick={() => navigate('/')}
-              className="bg-primary hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg transition"
+              className="bg-cherry hover:bg-[#5A0A14] text-white font-semibold px-6 py-3 rounded-lg transition"
             >
               Browse Restaurants
             </button>
@@ -78,14 +78,14 @@ const Cart = () => {
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-8 h-8 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white transition flex items-center justify-center"
+                          className="w-8 h-8 rounded-full border-2 border-cherry text-cherry hover:bg-cherry hover:text-white transition flex items-center justify-center"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
                         <span className="font-semibold text-lg">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-8 h-8 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white transition flex items-center justify-center"
+                          className="w-8 h-8 rounded-full border-2 border-cherry text-cherry hover:bg-cherry hover:text-white transition flex items-center justify-center"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -126,7 +126,7 @@ const Cart = () => {
               
               <button
                 onClick={() => navigate('/checkout')}
-                className="w-full bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition"
+                className="w-full bg-cherry hover:bg-[#5A0A14] text-white font-semibold py-3 rounded-lg transition"
               >
                 Proceed to Checkout
               </button>

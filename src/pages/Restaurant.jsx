@@ -194,8 +194,8 @@ const Restaurant = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full font-medium transition capitalize ${
                   selectedCategory === category
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'bg-cherry text-white'
+                    : 'bg-white text-gray-700 hover:bg-oat'
                 }`}
               >
                 {category}
@@ -240,8 +240,8 @@ const Restaurant = () => {
                     onClick={() => handleAddToCart(item)}
                     className={`px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${
                       addedItems[item.id]
-                        ? 'bg-green-500 text-white'
-                        : 'bg-primary hover:bg-orange-600 text-white'
+                        ? 'bg-olive text-white'
+                        : 'bg-cherry hover:bg-[#5A0A14] text-white'
                     }`}
                   >
                     {addedItems[item.id] ? (

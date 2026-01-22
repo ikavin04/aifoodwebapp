@@ -129,8 +129,8 @@ const Home = () => {
               onClick={() => setFilterType('all')}
               className={`px-4 py-2 rounded-full font-medium transition ${
                 filterType === 'all'
-                  ? 'bg-primary text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-cherry text-white'
+                  : 'bg-white text-gray-700 hover:bg-oat'
               }`}
             >
               All Restaurants
@@ -139,8 +139,8 @@ const Home = () => {
               onClick={() => setFilterType('trending')}
               className={`px-4 py-2 rounded-full font-medium transition flex items-center gap-1 ${
                 filterType === 'trending'
-                  ? 'bg-primary text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-cherry text-white'
+                  : 'bg-white text-gray-700 hover:bg-oat'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -150,8 +150,8 @@ const Home = () => {
               onClick={() => setFilterType('rating')}
               className={`px-4 py-2 rounded-full font-medium transition flex items-center gap-1 ${
                 filterType === 'rating'
-                  ? 'bg-primary text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-cherry text-white'
+                  : 'bg-white text-gray-700 hover:bg-oat'
               }`}
             >
               <Star className="w-4 h-4" />

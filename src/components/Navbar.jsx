@@ -32,7 +32,7 @@ const Navbar = () => {
             <Link
               to="/"
               className={`flex items-center space-x-1 ${
-                isActive('/') ? 'text-primary' : 'text-gray-600 hover:text-primary'
+                isActive('/') ? 'text-cherry' : 'text-gray-600 hover:text-cherry'
               } transition`}
             >
               <Home className="w-5 h-5" />
@@ -42,7 +42,7 @@ const Navbar = () => {
             <Link
               to="/ai-assistant"
               className={`flex items-center space-x-1 ${
-                isActive('/ai-assistant') ? 'text-primary' : 'text-gray-600 hover:text-primary'
+                isActive('/ai-assistant') ? 'text-cherry' : 'text-gray-600 hover:text-cherry'
               } transition`}
             >
               <Bot className="w-5 h-5" />
@@ -52,7 +52,7 @@ const Navbar = () => {
             <Link
               to="/cart"
               className={`flex items-center space-x-1 relative ${
-                isActive('/cart') ? 'text-primary' : 'text-gray-600 hover:text-primary'
+                isActive('/cart') ? 'text-cherry' : 'text-gray-600 hover:text-cherry'
               } transition`}
             >
               <ShoppingCart className="w-5 h-5" />
@@ -67,7 +67,7 @@ const Navbar = () => {
             <Link
               to="/orders"
               className={`flex items-center space-x-1 ${
-                isActive('/orders') ? 'text-primary' : 'text-gray-600 hover:text-primary'
+                isActive('/orders') ? 'text-cherry' : 'text-gray-600 hover:text-cherry'
               } transition`}
             >
               <Package className="w-5 h-5" />
