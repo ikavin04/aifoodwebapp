@@ -1,217 +1,188 @@
-# AI Food Ordering Web App
+# AI Food Ordering Assistant
 
-A modern food ordering web application with AI-powered assistance, built with React and Tailwind CSS.
+An intelligent NLP-powered food ordering system built with Flask and PostgreSQL.
 
-## Features
+## 🚀 Features
 
-✨ **Core Features:**
-- User Authentication (Login/Register with JWT)
-- Restaurant Browsing with Search & Filters
-- Menu Viewing with Categories
-- Shopping Cart Management
-- Checkout with COD Payment
-- Order History Tracking
-- **AI Assistant** - Text-based food ordering assistant with smart suggestions
+- **Natural Language Processing**: Users can order food using natural language
+- **Smart Intent Extraction**: Automatically detects food name, budget, preferences, and priorities
+- **Intelligent Ranking**: Returns top 3 options (cheapest, fastest, best-rated)
+- **Auto Order Preparation**: Prepares order with Cash on Delivery by default
+- **Simple Confirmation Flow**: Easy yes/no confirmation for orders
 
-🤖 **AI Assistant Features:**
-- Natural language food ordering
-- Smart recommendations:
-  - **Cheapest** - Best price options
-  - **Fastest** - Quick delivery
-  - **Best Rated** - Top-rated restaurants
-- Chat interface with conversation history
-- Direct cart integration from AI suggestions
+## 📋 API Endpoint
 
-## Tech Stack
+### POST `/ai/order-assistant`
 
-- **Frontend:** React 18 + Vite
-- **Routing:** React Router v6
-- **Styling:** Tailwind CSS
-- **Icons:** Lucide React
-- **HTTP Client:** Axios
-- **State Management:** Context API
-- **Auth:** JWT stored in localStorage
-
-## Project Structure
-
-```
-aifoodwebapp/
-├── src/
-│   ├── components/
-│   │   └── Navbar.jsx
-│   ├── context/
-│   │   ├── AuthContext.jsx
-│   │   └── CartContext.jsx
-│   ├── pages/
-│   │   ├── Login.jsx
-│   │   ├── Register.jsx
-│   │   ├── Home.jsx
-│   │   ├── Restaurant.jsx
-│   │   ├── Cart.jsx
-│   │   ├── Checkout.jsx
-│   │   ├── Orders.jsx
-│   │   └── AIAssistant.jsx
-│   ├── services/
-│   │   └── api.js
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-├── index.html
-├── package.json
-├── vite.config.js
-├── tailwind.config.js
-└── postcss.config.js
+**Input:**
+```json
+{
+  "user_id": 1,
+  "message": "Order cheapest biryani under 200 near me"
+}
 ```
 
-## Getting Started
+**Output:**
+```json
+{
+  "status": "pending_confirmation",
+  "intent": {
+    "food_name": "biryani",
+    "max_budget": 200,
+    "preference": null,
+    "priority": "cheapest"
+  },
+  "top3_suggestions": [
+    {
+      "category": "Cheapest",
+      "restaurant": "Food Court Express",
+      "item": "Mini Chicken Biryani",
+      "price": 90,
+      "delivery_fee": 40,
+      "total": 130,
+      "rating": 4.0,
+      "eta_minutes": 28
+    },
+    ...
+  ],
+  "selected_order": {
+    "restaurant_name": "Food Court Express",
+    "items": [...],
+    "total": 130,
+    "payment_method": "COD"
+  },
+  "next_action": "confirm",
+  "confirmation_message": "Found Mini Chicken Biryani..."
+}
+```
 
-### Prerequisites
+**Confirm Order:**
+```json
+{
+  "user_id": 1,
+  "message": "Order cheapest biryani under 200 near me",
+  "confirm": true
+}
+```
 
-- Node.js (v16 or higher)
-- npm or yarn
+## 🎯 AI Capabilities
 
-### Installation
+### 1. Intent Extraction
+- **Food Name**: Detects 30+ food items (biryani, pizza, burger, pasta, etc.)
+- **Budget**: Extracts price limits (under 200, below 150, less than 300)
+- **Preference**: Identifies veg/non-veg preferences
+- **Priority**: Determines cheapest/fastest/best-rated
 
-1. Install dependencies:
+### 2. Database Search
+- Matches restaurants and menu items
+- Filters by budget, preference, availability
+- Ranks by price, ETA, and rating
+
+### 3. Smart Suggestions
+Returns exactly 3 options:
+1. **Cheapest**: Lowest total cost (item + delivery)
+2. **Fastest**: Shortest estimated delivery time
+3. **Best Rated**: Highest restaurant rating
+
+### 4. Order Automation
+- Auto-selects best option based on user priority
+- Prepares complete order with COD
+- Single confirmation step
+
+## 📦 Installation
+
 ```bash
-npm install
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure database
+cp .env.example .env
+# Edit .env with your PostgreSQL credentials
+
+# Initialize database
+python database.py
+
+# Run server
+python app.py
 ```
 
-2. Start the development server:
+## 🧪 Testing
+
 ```bash
-npm run dev
+# Run unit tests
+python test_ai_assistant.py
+
+# Test with curl
+curl -X POST http://localhost:5000/ai/order-assistant \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": 1,
+    "message": "Order cheapest biryani under 200 near me"
+  }'
 ```
 
-3. Open your browser and navigate to:
-```
-http://localhost:3000
-```
+## 📝 Example Messages
 
-### Build for Production
-
-```bash
-npm run build
 ```
-
-Preview production build:
-```bash
-npm run preview
+"Order cheapest biryani under 200 near me"
+"I want fastest veg pizza delivery"
+"Show me best chicken biryani under 150 rupees"
+"Get me cheap vegetarian biryani below 180"
+"Order chicken biryani asap"
+"I want the most popular pizza"
 ```
 
-## API Integration
+## 💳 Payment
 
-The app expects a Flask backend running on `http://localhost:5000` with the following endpoints:
+- **Default**: Cash on Delivery (COD)
+- **Online Payment**: Returns "Manual payment required" message
 
-### Authentication
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
+## 🗄️ Database Schema
 
-### Restaurants
-- `GET /restaurants` - Get all restaurants (supports search/filter params)
-- `GET /restaurants/:id` - Get restaurant details
-- `GET /restaurants/:id/menu` - Get restaurant menu
+### restaurants
+- id, name, address, rating, distance_km, delivery_fee
 
-### Orders
-- `POST /orders` - Create new order (COD)
-- `GET /orders/history` - Get user's order history
+### menu_items
+- id, restaurant_id, name, price, category, is_veg, is_available
 
-### AI Assistant
-- `POST /ai/order-assistant` - AI chat endpoint
-  - Request: `{ message: string, conversationHistory: array }`
-  - Response: `{ message: string, suggestions?: array }`
+### orders
+- id, user_id, restaurant_id, total_amount, payment_method, status
 
-## Pages
+### order_items
+- id, order_id, menu_item_id, quantity, price
 
-### 1. Login & Register
-- JWT-based authentication
-- Form validation
-- Error handling
+## 🔧 Technology Stack
 
-### 2. Home Page
-- Restaurant listing with images
-- Search functionality
-- Filter by trending/top-rated
-- Responsive grid layout
+- **Backend**: Flask (Python)
+- **Database**: PostgreSQL
+- **NLP**: Regex-based intent extraction
+- **Architecture**: Blueprint-based modular design
 
-### 3. Restaurant Page
-- Restaurant details
-- Menu items by category
-- Add to cart functionality
-- Veg/Non-veg indicators
+## 📊 Features Implemented
 
-### 4. Cart Page
-- View cart items
-- Update quantities
-- Remove items
-- Price breakdown
-- Proceed to checkout
+✅ NLP Intent Extraction (food, budget, preference, priority)  
+✅ PostgreSQL database queries with filtering  
+✅ Top 3 ranking (cheapest, fastest, best-rated)  
+✅ Auto order preparation with COD  
+✅ Confirmation flow  
+✅ Payment query handling  
+✅ Sample data seeding  
+✅ Test cases with CURL examples  
 
-### 5. Checkout Page
-- Delivery address form
-- Order summary
-- COD payment only
-- Form validation
+## 🚦 API Endpoints
 
-### 6. Orders Page
-- Order history
-- Order status tracking
-- Order details
+- `GET /` - API info
+- `GET /health` - Health check
+- `POST /ai/order-assistant` - Main AI assistant
+- `POST /ai/payment-query` - Payment queries
 
-### 7. AI Assistant Page
-- Chat interface
-- Natural language processing
-- Smart food recommendations
-- 3 suggestion types:
-  - Best Price
-  - Fastest Delivery
-  - Top Rated
-- Direct add to cart
+## 👨‍💻 Development
 
-## Mock Data
+This module is designed to work independently. Your team members can integrate:
+- **Frontend**: Call the API endpoints
+- **Backend**: Import `ai_assistant_bp` blueprint
+- **Database**: Use existing schema or modify as needed
 
-The app includes mock data for development when the backend is not available. This allows full frontend testing without a backend server.
+## 📄 License
 
-## NLP Integration
-
-The AI Assistant uses Natural Language Processing to:
-- Understand user intent (food type, preferences)
-- Extract entities (cuisines, restaurants, items)
-- Provide contextual recommendations
-- Maintain conversation flow
-
-For production, integrate with:
-- OpenAI GPT API
-- Google Dialogflow
-- Rasa NLP
-- Custom NLP model
-
-## Future Enhancements
-
-🚀 **Phase 2 - Voice Assistant:**
-- Speech-to-Text integration
-- Voice commands
-- Text-to-Speech responses
-- Wake word detection
-
-📱 **Additional Features:**
-- Payment gateway integration
-- Real-time order tracking
-- Push notifications
-- User reviews & ratings
-- Favorites/Wishlists
-- Restaurant owner dashboard
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## License
-
-MIT
-
-## Author
-
-Built with ❤️ for the AI Food Ordering App
+This is a team project module developed by Kavin.
