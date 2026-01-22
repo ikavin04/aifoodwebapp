@@ -1,0 +1,198 @@
+{
+  "info": {
+    "name": "AI Food Ordering Assistant",
+    "description": "API collection for testing AI-powered food ordering",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "API Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "Order Assistant - Cheapest Biryani",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"message\": \"Order cheapest biryani under 200 near me\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/order-assistant",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "order-assistant"]
+        }
+      }
+    },
+    {
+      "name": "Order Assistant - Fast Veg Pizza",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 2,\n  \"message\": \"I want fastest veg pizza delivery\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/order-assistant",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "order-assistant"]
+        }
+      }
+    },
+    {
+      "name": "Order Assistant - Best Rated",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 3,\n  \"message\": \"Show me best chicken biryani under 150 rupees\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/order-assistant",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "order-assistant"]
+        }
+      }
+    },
+    {
+      "name": "Order Assistant - With Confirmation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"message\": \"Order cheapest biryani under 200 near me\",\n  \"confirm\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/order-assistant",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "order-assistant"]
+        }
+      }
+    },
+    {
+      "name": "Payment Query - Online Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Can I pay online?\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/payment-query",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "payment-query"]
+        }
+      }
+    },
+    {
+      "name": "Order Assistant - Budget Veg",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 4,\n  \"message\": \"Get me cheap vegetarian biryani below 180\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/order-assistant",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "order-assistant"]
+        }
+      }
+    },
+    {
+      "name": "Order Assistant - ASAP Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 5,\n  \"message\": \"Order chicken biryani asap\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/ai/order-assistant",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ai", "order-assistant"]
+        }
+      }
+    }
+  ]
+}
