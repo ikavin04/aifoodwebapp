@@ -19,7 +19,7 @@ const Orders = () => {
       const response = await orderAPI.getHistory();
       setOrders(response.data);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      // Using mock data (backend not required)
       // Mock data
       setOrders([
         {

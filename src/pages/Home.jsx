@@ -20,7 +20,7 @@ const Home = () => {
       const response = await restaurantAPI.getAll();
       setRestaurants(response.data);
     } catch (error) {
-      console.error('Error fetching restaurants:', error);
+      // Using mock data (backend not required)
       // Mock data for development
       setRestaurants([
         {

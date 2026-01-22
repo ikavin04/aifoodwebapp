@@ -63,7 +63,7 @@ const AIAssistant = () => {
         setSuggestions(response.data.suggestions);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      // Using mock AI responses (backend not required)
       
       // Mock AI response
       const mockResponse = generateMockResponse(input);

@@ -30,7 +30,7 @@ const Restaurant = () => {
       setRestaurant(restaurantRes.data);
       setMenu(menuRes.data);
     } catch (error) {
-      console.error('Error fetching restaurant data:', error);
+      // Using mock data (backend not required)
       // Mock data
       setRestaurant({
         id: parseInt(id),

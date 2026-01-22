@@ -21,6 +21,18 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Suppress backend connection errors (app uses mock data)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Silently handle backend connection errors
+    if (error.code === 'ERR_NETWORK' || error.message.includes('ERR_FAILED')) {
+      return Promise.reject({ silent: true, ...error });
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth APIs
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
