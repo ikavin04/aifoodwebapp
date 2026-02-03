@@ -27,8 +27,8 @@ const Restaurant = () => {
         restaurantAPI.getById(id),
         restaurantAPI.getMenu(id)
       ]);
-      setRestaurant(restaurantRes.data);
-      setMenu(menuRes.data);
+      setRestaurant(restaurantRes.data.restaurant);
+      setMenu(menuRes.data.menu_items || []);
     } catch (error) {
       // Using mock data (backend not required)
       // Mock data

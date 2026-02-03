@@ -10,16 +10,10 @@ address_bp = Blueprint('address', __name__, url_prefix='/addresses')
 def get_user_addresses():
     """Get all addresses for the current user"""
     try:
-        # Temporary: Try to get user_id from JWT, fallback to query param
-        try:
-            from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-            verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
-        except:
-            user_id = request.args.get('user_id', 17)  # Fallback to test user
-        
+        # Try to get user_id from query params or use logged-in user from body
+        user_id = request.args.get('user_id')
         if not user_id:
-            user_id = 17
+            user_id = 4  # Default for development
             
         addresses = AddressService.get_user_addresses(user_id)
         
@@ -36,24 +30,24 @@ def get_user_addresses():
 def add_address():
     """Add a new address for the current user"""
     try:
-        # Temporary: Try to get user_id from JWT, fallback to 17
-        try:
-            from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-            verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
-        except:
-            user_id = 17
-            
-        if not user_id:
-            user_id = 17
-            
         data = request.get_json()
+        
+        # Get user_id from request body or default to 4 for development
+        user_id = data.get('user_id', 4)
         
         # Validate required fields
         required_fields = ['label', 'address_line1', 'city', 'state', 'pincode']
+        missing_fields = []
         for field in required_fields:
             if not data.get(field):
-                return jsonify({'error': f'{field} is required'}), 400
+                missing_fields.append(field)
+        
+        if missing_fields:
+            return jsonify({
+                'error': 'Missing required fields',
+                'missing_fields': missing_fields,
+                'received_data': data
+            }), 400
         
         address, error = AddressService.create_address(
             user_id=user_id,
