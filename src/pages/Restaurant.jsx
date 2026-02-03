@@ -213,14 +213,14 @@ const Restaurant = () => {
             >
               <div className="relative h-48">
                 <img
-                  src={item.image}
+                  src={item.image_url || item.image}
                   alt={item.name}
                   className="w-full h-full object-cover"
                 />
                 <div className={`absolute top-3 left-3 px-2 py-1 rounded text-xs font-semibold ${
-                  item.isVeg ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                  (item.is_vegetarian ?? item.isVeg) ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                 }`}>
-                  {item.isVeg ? '🟢 Veg' : '🔴 Non-Veg'}
+                  {(item.is_vegetarian ?? item.isVeg) ? '🟢 Veg' : '🔴 Non-Veg'}
                 </div>
               </div>
               

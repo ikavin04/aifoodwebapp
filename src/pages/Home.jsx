@@ -222,7 +222,7 @@ const Home = () => {
               >
                 <div className="relative h-48">
                   <img
-                    src={restaurant.image}
+                    src={restaurant.image_url || restaurant.image}
                     alt={restaurant.name}
                     className="w-full h-full object-cover"
                   />
@@ -238,7 +238,7 @@ const Home = () => {
                   <h3 className="text-xl font-bold text-gray-900 mb-1">
                     {restaurant.name}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3">{restaurant.cuisine}</p>
+                  <p className="text-gray-600 text-sm mb-3">{restaurant.cuisine_type || restaurant.cuisine}</p>
                   
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-1 text-green-600 font-semibold">
@@ -247,11 +247,11 @@ const Home = () => {
                     </div>
                     <div className="flex items-center gap-1 text-gray-600">
                       <Clock className="w-4 h-4" />
-                      {restaurant.deliveryTime}
+                      {restaurant.delivery_time || restaurant.deliveryTime}
                     </div>
                     <div className="flex items-center gap-1 text-gray-600">
                       <DollarSign className="w-4 h-4" />
-                      {restaurant.priceRange}
+                      {restaurant.priceRange || '₹₹'}
                     </div>
                   </div>
                 </div>

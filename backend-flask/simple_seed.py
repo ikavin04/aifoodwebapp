@@ -71,21 +71,21 @@ with app.app_context():
             # Add sample menu items for each restaurant
             if restaurant.name == 'Pizza Palace':
                 menu_items = [
-                    {'name': 'Margherita Pizza', 'description': 'Classic pizza with tomato and mozzarella', 'price': 12.99, 'category': 'Pizza', 'is_vegetarian': True},
-                    {'name': 'Pepperoni Pizza', 'description': 'Pizza with pepperoni and cheese', 'price': 14.99, 'category': 'Pizza', 'is_vegetarian': False},
-                    {'name': 'Caesar Salad', 'description': 'Fresh romaine lettuce with Caesar dressing', 'price': 7.99, 'category': 'Salad', 'is_vegetarian': True}
+                    {'name': 'Margherita Pizza', 'description': 'Classic pizza with tomato and mozzarella', 'price': 12.99, 'category': 'Pizza', 'is_vegetarian': True, 'image_url': 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400'},
+                    {'name': 'Pepperoni Pizza', 'description': 'Pizza with pepperoni and cheese', 'price': 14.99, 'category': 'Pizza', 'is_vegetarian': False, 'image_url': 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400'},
+                    {'name': 'Caesar Salad', 'description': 'Fresh romaine lettuce with Caesar dressing', 'price': 7.99, 'category': 'Salad', 'is_vegetarian': True, 'image_url': 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400'}
                 ]
             elif restaurant.name == 'Burger Hub':
                 menu_items = [
-                    {'name': 'Classic Burger', 'description': 'Beef patty with lettuce and tomato', 'price': 9.99, 'category': 'Burger', 'is_vegetarian': False},
-                    {'name': 'Veggie Burger', 'description': 'Plant-based patty with fresh veggies', 'price': 8.99, 'category': 'Burger', 'is_vegetarian': True},
-                    {'name': 'French Fries', 'description': 'Crispy golden fries', 'price': 3.99, 'category': 'Sides', 'is_vegetarian': True}
+                    {'name': 'Classic Burger', 'description': 'Beef patty with lettuce and tomato', 'price': 9.99, 'category': 'Burger', 'is_vegetarian': False, 'image_url': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400'},
+                    {'name': 'Veggie Burger', 'description': 'Plant-based patty with fresh veggies', 'price': 8.99, 'category': 'Burger', 'is_vegetarian': True, 'image_url': 'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=400'},
+                    {'name': 'French Fries', 'description': 'Crispy golden fries', 'price': 3.99, 'category': 'Sides', 'is_vegetarian': True, 'image_url': 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400'}
                 ]
             else:  # Sushi World
                 menu_items = [
-                    {'name': 'California Roll', 'description': 'Crab, avocado, and cucumber roll', 'price': 11.99, 'category': 'Sushi', 'is_vegetarian': False},
-                    {'name': 'Salmon Nigiri', 'description': 'Fresh salmon on rice', 'price': 13.99, 'category': 'Sushi', 'is_vegetarian': False},
-                    {'name': 'Vegetable Tempura', 'description': 'Crispy battered vegetables', 'price': 8.99, 'category': 'Appetizer', 'is_vegetarian': True}
+                    {'name': 'California Roll', 'description': 'Crab, avocado, and cucumber roll', 'price': 11.99, 'category': 'Sushi', 'is_vegetarian': False, 'image_url': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400'},
+                    {'name': 'Salmon Nigiri', 'description': 'Fresh salmon on rice', 'price': 13.99, 'category': 'Sushi', 'is_vegetarian': False, 'image_url': 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=400'},
+                    {'name': 'Vegetable Tempura', 'description': 'Crispy battered vegetables', 'price': 8.99, 'category': 'Appetizer', 'is_vegetarian': True, 'image_url': 'https://images.unsplash.com/photo-1610180473036-b8f2a7dc0f56?w=400'}
                 ]
             
             for item_data in menu_items:
