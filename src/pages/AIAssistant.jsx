@@ -1,24 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { aiAPI } from '../services/api';
-import { useCart } from '../context/CartContext';
 import Navbar from '../components/Navbar';
-import { Send, Bot, User, TrendingUp, Clock, Star, Check } from 'lucide-react';
+import { Send, Bot, User, Check } from 'lucide-react';
 
 const AIAssistant = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hi! I'm your AI food assistant. Tell me what you'd like to eat, and I'll help you find the perfect meal! 🍕",
+      text: "Hi! I'm your AI food assistant. Tell me what you'd like to eat, and I'll help you find the perfect meal! 🍕\n\nYou can also ask me to place orders directly! Just say something like:\n'Place order for Margherita Pizza from Pizza Palace with cash on delivery'",
       sender: 'bot',
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState(null);
   const messagesEndRef = useRef(null);
-  const { addToCart } = useCart();
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
@@ -49,178 +46,61 @@ const AIAssistant = () => {
         conversationHistory: messages
       });
 
-      const botMessage = {
-        id: messages.length + 2,
-        text: response.data.message,
-        sender: 'bot',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-
-      // If AI provides suggestions
-      if (response.data.suggestions) {
-        setSuggestions(response.data.suggestions);
+      // Check if order was placed successfully
+      if (response.data.success && response.data.order) {
+        const orderDetails = response.data.order_details;
+        const botMessage = {
+          id: messages.length + 2,
+          text: response.data.message,
+          sender: 'bot',
+          timestamp: new Date(),
+          orderPlaced: true,
+          orderData: {
+            orderId: response.data.order.id,
+            dish: orderDetails.dish,
+            restaurant: orderDetails.restaurant,
+            price: orderDetails.price,
+            paymentMethod: orderDetails.payment_method.replace('_', ' '),
+            status: response.data.order.status
+          }
+        };
+        setMessages(prev => [...prev, botMessage]);
+      } 
+      // Check for errors that need user action
+      else if (response.data.error) {
+        const needLogin = response.data.need_login;
+        const botMessage = {
+          id: messages.length + 2,
+          text: response.data.error,
+          sender: 'bot',
+          timestamp: new Date(),
+          needLogin: needLogin
+        };
+        setMessages(prev => [...prev, botMessage]);
+      }
+      // Regular AI response
+      else if (response.data.response) {
+        const botMessage = {
+          id: messages.length + 2,
+          text: response.data.response,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botMessage]);
       }
     } catch (error) {
-      // Using mock AI responses (backend not required)
+      console.error('AI Assistant Error:', error);
       
-      // Mock AI response
-      const mockResponse = generateMockResponse(input);
+      // Show error message to user
       const botMessage = {
         id: messages.length + 2,
-        text: mockResponse.message,
+        text: "Sorry, I'm having trouble connecting to the server. Please make sure you're logged in and try again. If the issue persists, try browsing restaurants directly from the home page.",
         sender: 'bot',
         timestamp: new Date()
       };
-
       setMessages(prev => [...prev, botMessage]);
-      
-      if (mockResponse.suggestions) {
-        setSuggestions(mockResponse.suggestions);
-      }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const generateMockResponse = (userInput) => {
-    const input = userInput.toLowerCase();
-    
-    if (input.includes('pizza') || input.includes('italian')) {
-      return {
-        message: "Great choice! I found some amazing pizza options for you. Here are my top 3 recommendations based on price, delivery time, and ratings:",
-        suggestions: [
-          {
-            id: 1,
-            restaurant: 'Pizza Palace',
-            items: ['Margherita Pizza', 'Garlic Bread'],
-            totalPrice: 398,
-            deliveryTime: '30 min',
-            rating: 4.5,
-            type: 'cheapest',
-            restaurantId: 1
-          },
-          {
-            id: 2,
-            restaurant: 'Pizza Express',
-            items: ['Pepperoni Pizza'],
-            totalPrice: 399,
-            deliveryTime: '20 min',
-            rating: 4.3,
-            type: 'fastest',
-            restaurantId: 1
-          },
-          {
-            id: 3,
-            restaurant: 'Pizza Palace',
-            items: ['BBQ Chicken Pizza', 'Caesar Salad'],
-            totalPrice: 648,
-            deliveryTime: '35 min',
-            rating: 4.7,
-            type: 'best-rated',
-            restaurantId: 1
-          }
-        ]
-      };
-    } else if (input.includes('biryani') || input.includes('indian')) {
-      return {
-        message: "Excellent! I've found some delicious biryani options. Here are my recommendations:",
-        suggestions: [
-          {
-            id: 1,
-            restaurant: 'Biryani House',
-            items: ['Chicken Biryani', 'Raita'],
-            totalPrice: 320,
-            deliveryTime: '40 min',
-            rating: 4.7,
-            type: 'cheapest',
-            restaurantId: 3
-          },
-          {
-            id: 2,
-            restaurant: 'Quick Biryani',
-            items: ['Veg Biryani'],
-            totalPrice: 250,
-            deliveryTime: '25 min',
-            rating: 4.2,
-            type: 'fastest',
-            restaurantId: 3
-          },
-          {
-            id: 3,
-            restaurant: 'Biryani House',
-            items: ['Mutton Biryani', 'Kebab'],
-            totalPrice: 550,
-            deliveryTime: '45 min',
-            rating: 4.8,
-            type: 'best-rated',
-            restaurantId: 3
-          }
-        ]
-      };
-    } else {
-      return {
-        message: "I'd love to help you find the perfect meal! Could you tell me what type of cuisine you're craving? For example: pizza, biryani, burger, sushi, tacos, or anything else!",
-        suggestions: null
-      };
-    }
-  };
-
-  const handleConfirmOrder = (suggestion) => {
-    // Add items to cart
-    suggestion.items.forEach((itemName, index) => {
-      const mockItem = {
-        id: Date.now() + index,
-        name: itemName,
-        price: Math.round(suggestion.totalPrice / suggestion.items.length),
-        description: `Delicious ${itemName} from ${suggestion.restaurant}`,
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300',
-        category: 'Main Course',
-        isVeg: itemName.toLowerCase().includes('veg')
-      };
-      
-      addToCart(mockItem, {
-        id: suggestion.restaurantId,
-        name: suggestion.restaurant
-      });
-    });
-
-    // Show success message
-    const botMessage = {
-      id: messages.length + 1,
-      text: `Great! I've added ${suggestion.items.join(', ')} to your cart. You can proceed to checkout or continue browsing.`,
-      sender: 'bot',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, botMessage]);
-    setSuggestions(null);
-  };
-
-  const getSuggestionIcon = (type) => {
-    switch (type) {
-      case 'cheapest':
-        return <TrendingUp className="w-5 h-5 text-green-600" />;
-      case 'fastest':
-        return <Clock className="w-5 h-5 text-blue-600" />;
-      case 'best-rated':
-        return <Star className="w-5 h-5 text-yellow-600 fill-current" />;
-      default:
-        return null;
-    }
-  };
-
-  const getSuggestionLabel = (type) => {
-    switch (type) {
-      case 'cheapest':
-        return 'Best Price';
-      case 'fastest':
-        return 'Fastest Delivery';
-      case 'best-rated':
-        return 'Top Rated';
-      default:
-        return '';
     }
   };
 
@@ -261,6 +141,40 @@ const AIAssistant = () => {
                     }`}
                   >
                     <p className="text-sm leading-relaxed">{message.text}</p>
+                    
+                    {/* Login Prompt */}
+                    {message.needLogin && (
+                      <button
+                        onClick={() => navigate('/login')}
+                        className="mt-3 w-full bg-cherry text-white py-2 px-4 rounded-lg hover:bg-[#5A0A14] transition font-medium"
+                      >
+                        Login / Register
+                      </button>
+                    )}
+                    
+                    {/* Order Confirmation Card */}
+                    {message.orderPlaced && message.orderData && (
+                      <div className="mt-3 bg-white rounded-lg p-3 border-2 border-green-500">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Check className="w-5 h-5 text-green-600" />
+                          <span className="font-bold text-green-600">Order Placed!</span>
+                        </div>
+                        <div className="text-sm text-gray-700 space-y-1">
+                          <p><strong>Order ID:</strong> #{message.orderData.orderId}</p>
+                          <p><strong>Dish:</strong> {message.orderData.dish}</p>
+                          <p><strong>Restaurant:</strong> {message.orderData.restaurant}</p>
+                          <p><strong>Price:</strong> ₹{message.orderData.price}</p>
+                          <p><strong>Payment:</strong> {message.orderData.paymentMethod}</p>
+                          <p><strong>Status:</strong> <span className="capitalize">{message.orderData.status}</span></p>
+                        </div>
+                        <button
+                          onClick={() => navigate('/orders')}
+                          className="mt-2 w-full bg-cherry text-white py-1.5 px-3 rounded text-sm hover:bg-[#5A0A14] transition"
+                        >
+                          View Order Details
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-gray-500 mt-1 px-2">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -292,55 +206,6 @@ const AIAssistant = () => {
               </div>
             )}
 
-            {/* Suggestions */}
-            {suggestions && (
-              <div className="space-y-3">
-                {suggestions.map((suggestion) => (
-                  <div
-                    key={suggestion.id}
-                    className="bg-gradient-to-r from-butter to-oat border border-[#E5D5B7] rounded-xl p-4 hover:shadow-md transition"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        {getSuggestionIcon(suggestion.type)}
-                        <span className="font-bold text-gray-900 text-lg">
-                          {getSuggestionLabel(suggestion.type)}
-                        </span>
-                      </div>
-                      <span className="text-2xl font-bold text-cherry">
-                        ₹{suggestion.totalPrice}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 mb-3">
-                      <p className="font-semibold text-gray-900">{suggestion.restaurant}</p>
-                      <p className="text-sm text-gray-600">
-                        {suggestion.items.join(' • ')}
-                      </p>
-                      <div className="flex gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {suggestion.deliveryTime}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          {suggestion.rating}
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => handleConfirmOrder(suggestion)}
-                      className="w-full bg-cherry hover:bg-[#5A0A14] text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
-                    >
-                      <Check className="w-5 h-5" />
-                      Add to Cart
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
             <div ref={messagesEndRef} />
           </div>
 
@@ -352,7 +217,7 @@ const AIAssistant = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Tell me what you want to eat..."
+                placeholder="Tell me what you want to eat or place an order..."
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                 disabled={loading}
               />
@@ -365,7 +230,7 @@ const AIAssistant = () => {
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2 text-center">
-              Try: "I want pizza", "Show me biryani options", "Something quick and cheap"
+              Try: "Place order for Margherita Pizza from Pizza Palace with cash on delivery"
             </p>
           </div>
         </div>

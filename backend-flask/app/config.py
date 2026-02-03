@@ -14,6 +14,11 @@ class Config:
     # JWT Configuration
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600)))
+    JWT_COOKIE_CSRF_PROTECT = False  # Disable CSRF for API tokens
+    JWT_CSRF_CHECK_FORM = False
+    JWT_TOKEN_LOCATION = ['headers']  # Only accept tokens from headers
+    JWT_HEADER_NAME = 'Authorization'
+    JWT_HEADER_TYPE = 'Bearer'
     
     # CORS Configuration
     CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000,http://localhost:3001').split(',')

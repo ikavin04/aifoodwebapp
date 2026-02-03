@@ -1,32 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { restaurantAPI } from '../services/api';
+import { restaurantAPI, addressAPI } from '../services/api';
 import Navbar from '../components/Navbar';
-import { Search, Star, Clock, DollarSign, TrendingUp } from 'lucide-react';
+import { Search, Star, Clock, DollarSign, TrendingUp, MapPin } from 'lucide-react';
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [currentCity, setCurrentCity] = useState('');
 
   useEffect(() => {
+    // Only fetch addresses if user has a token
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchCurrentAddress();
+    }
     fetchRestaurants();
+
+    // Listen for address changes
+    const handleAddressChange = (event) => {
+      const address = event.detail;
+      setCurrentCity(address.city);
+      fetchRestaurants(address.city);
+    };
+
+    window.addEventListener('addressChanged', handleAddressChange);
+    return () => window.removeEventListener('addressChanged', handleAddressChange);
   }, []);
 
-  const fetchRestaurants = async () => {
+  const fetchCurrentAddress = async () => {
+    try {
+      const response = await addressAPI.getAll();
+      const addresses = response.data.addresses;
+      const defaultAddr = addresses.find(addr => addr.is_default) || addresses[0];
+      if (defaultAddr) {
+        setCurrentCity(defaultAddr.city);
+      }
+    } catch (error) {
+      // Silently handle if not authenticated
+      if (error.response?.status !== 401) {
+        console.error('Error fetching current address:', error);
+      }
+    }
+  };
+
+  const fetchRestaurants = async (city = currentCity) => {
     try {
       setLoading(true);
-      const response = await restaurantAPI.getAll();
-      setRestaurants(response.data);
+      const params = city ? { city } : {};
+      const response = await restaurantAPI.getAll(params);
+      setRestaurants(response.data.restaurants || response.data);
     } catch (error) {
       // Using mock data (backend not required)
-      // Mock data for development
+      // Mock data for development with cities
       setRestaurants([
         {
           id: 1,
           name: "Pizza Palace",
           cuisine: "Italian",
+          city: "Mumbai",
           rating: 4.5,
           deliveryTime: "30-35 min",
           priceRange: "₹200-400",
@@ -37,6 +71,7 @@ const Home = () => {
           id: 2,
           name: "Burger King",
           cuisine: "American",
+          city: "Mumbai",
           rating: 4.2,
           deliveryTime: "25-30 min",
           priceRange: "₹150-300",
@@ -47,6 +82,7 @@ const Home = () => {
           id: 3,
           name: "Biryani House",
           cuisine: "Indian",
+          city: "Delhi",
           rating: 4.7,
           deliveryTime: "40-45 min",
           priceRange: "₹250-500",
@@ -57,6 +93,7 @@ const Home = () => {
           id: 4,
           name: "Sushi Bar",
           cuisine: "Japanese",
+          city: "Bangalore",
           rating: 4.4,
           deliveryTime: "35-40 min",
           priceRange: "₹400-800",
@@ -67,6 +104,7 @@ const Home = () => {
           id: 5,
           name: "Taco Fiesta",
           cuisine: "Mexican",
+          city: "Mumbai",
           rating: 4.3,
           deliveryTime: "30-35 min",
           priceRange: "₹200-350",
@@ -77,13 +115,14 @@ const Home = () => {
           id: 6,
           name: "Thai Express",
           cuisine: "Thai",
+          city: "Delhi",
           rating: 4.6,
           deliveryTime: "35-40 min",
           priceRange: "₹300-600",
           image: "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400",
           trending: false
         }
-      ]);
+      ].filter(r => !city || r.city.toLowerCase() === city.toLowerCase()));
     } finally {
       setLoading(false);
     }
@@ -108,7 +147,15 @@ const Home = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Order Food Online
           </h1>
-          <p className="text-gray-600">Discover the best food & drinks in your area</p>
+          <p className="text-gray-600 flex items-center gap-2">
+            {currentCity && (
+              <>
+                <MapPin className="w-4 h-4 text-cherry" />
+                Showing restaurants in <span className="font-semibold text-cherry">{currentCity}</span>
+              </>
+            )}
+            {!currentCity && "Discover the best food & drinks in your area"}
+          </p>
         </div>
 
         {/* Search and Filter */}

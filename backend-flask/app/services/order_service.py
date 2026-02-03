@@ -7,7 +7,7 @@ class OrderService:
     """Service for handling order operations"""
     
     @staticmethod
-    def create_order(user_id, items, delivery_address, phone, notes=None):
+    def create_order(user_id, items, delivery_address, phone, notes=None, payment_method='cash_on_delivery'):
         """Create a new order"""
         if not items or len(items) == 0:
             return None, "No items provided"
@@ -52,7 +52,7 @@ class OrderService:
                 phone=phone,
                 notes=notes,
                 status='pending',
-                payment_method='cash_on_delivery'
+                payment_method=payment_method
             )
             db.session.add(order)
             db.session.flush()  # Get order ID

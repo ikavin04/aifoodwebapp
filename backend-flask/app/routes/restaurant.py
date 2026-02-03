@@ -11,9 +11,10 @@ def get_restaurants():
     try:
         query = request.args.get('query')
         cuisine_type = request.args.get('cuisine_type')
+        city = request.args.get('city')
         
-        if query or cuisine_type:
-            restaurants = RestaurantService.search_restaurants(query, cuisine_type)
+        if query or cuisine_type or city:
+            restaurants = RestaurantService.search_restaurants(query, cuisine_type, city)
         else:
             restaurants = RestaurantService.get_all_restaurants()
         

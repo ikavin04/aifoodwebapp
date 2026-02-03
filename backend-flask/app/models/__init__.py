@@ -13,13 +13,15 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(20), nullable=True)
-    address = db.Column(db.Text, nullable=True)
+    address = db.Column(db.Text, nullable=True)  # Kept for backward compatibility
+    current_address_id = db.Column(db.Integer, db.ForeignKey('user_addresses.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     orders = db.relationship('Order', backref='user', lazy=True, cascade='all, delete-orphan')
     cart_items = db.relationship('Cart', backref='user', lazy=True, cascade='all, delete-orphan')
+    addresses = db.relationship('UserAddress', backref='user', lazy=True, cascade='all, delete-orphan', foreign_keys='UserAddress.user_id')
     
     def set_password(self, password):
         """Hash and set password"""
@@ -31,12 +33,54 @@ class User(db.Model):
     
     def to_dict(self):
         """Convert to dictionary"""
+        current_address = None
+        if self.current_address_id:
+            current_address = UserAddress.query.get(self.current_address_id)
+        
         return {
             'id': self.id,
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
             'address': self.address,
+            'current_address': current_address.to_dict() if current_address else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class UserAddress(db.Model):
+    """User Address model for managing multiple delivery addresses"""
+    __tablename__ = 'user_addresses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    label = db.Column(db.String(50), nullable=False)  # e.g., "Home", "Work", "Other"
+    address_line1 = db.Column(db.String(255), nullable=False)
+    address_line2 = db.Column(db.String(255), nullable=True)
+    city = db.Column(db.String(100), nullable=False)
+    state = db.Column(db.String(100), nullable=False)
+    pincode = db.Column(db.String(20), nullable=False)
+    landmark = db.Column(db.String(255), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    is_default = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        """Convert to dictionary"""
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'label': self.label,
+            'address_line1': self.address_line1,
+            'address_line2': self.address_line2,
+            'city': self.city,
+            'state': self.state,
+            'pincode': self.pincode,
+            'landmark': self.landmark,
+            'phone': self.phone,
+            'is_default': self.is_default,
+            'full_address': f"{self.address_line1}, {self.address_line2 + ', ' if self.address_line2 else ''}{self.city}, {self.state} - {self.pincode}",
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
@@ -49,6 +93,9 @@ class Restaurant(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     address = db.Column(db.String(255), nullable=False)
+    city = db.Column(db.String(100), nullable=False)  # Added city field for filtering
+    state = db.Column(db.String(100), nullable=True)
+    pincode = db.Column(db.String(20), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
     image_url = db.Column(db.String(500), nullable=True)
     cuisine_type = db.Column(db.String(50), nullable=True)
@@ -68,6 +115,9 @@ class Restaurant(db.Model):
             'name': self.name,
             'description': self.description,
             'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'pincode': self.pincode,
             'phone': self.phone,
             'image_url': self.image_url,
             'cuisine_type': self.cuisine_type,

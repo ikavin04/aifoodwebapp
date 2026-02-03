@@ -31,8 +31,8 @@ class RestaurantService:
         return menu_items, None
     
     @staticmethod
-    def search_restaurants(query=None, cuisine_type=None):
-        """Search restaurants by name or cuisine type"""
+    def search_restaurants(query=None, cuisine_type=None, city=None):
+        """Search restaurants by name, cuisine type, or city"""
         filters = [Restaurant.is_active == True]
         
         if query:
@@ -40,5 +40,8 @@ class RestaurantService:
         
         if cuisine_type:
             filters.append(Restaurant.cuisine_type == cuisine_type)
+        
+        if city:
+            filters.append(Restaurant.city.ilike(f'%{city}%'))
         
         return Restaurant.query.filter(*filters).all()

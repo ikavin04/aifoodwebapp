@@ -30,8 +30,13 @@ def register():
         if error:
             return jsonify({'error': error}), 400
         
+        # Create access token for immediate login after registration
+        from flask_jwt_extended import create_access_token
+        access_token = create_access_token(identity=user.id)
+        
         return jsonify({
             'message': 'User registered successfully',
+            'access_token': access_token,
             'user': user.to_dict()
         }), 201
     

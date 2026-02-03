@@ -17,18 +17,41 @@ def create_app(config_name='default'):
     jwt.init_app(app)
     cors.init_app(app, origins=app.config['CORS_ORIGINS'])
     
+    # JWT error handlers
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        print(f"INVALID TOKEN ERROR: {error}")
+        return jsonify({'error': 'Invalid token', 'details': str(error)}), 401
+    
+    @jwt.unauthorized_loader
+    def unauthorized_callback(error):
+        print(f"UNAUTHORIZED ERROR: {error}")
+        return jsonify({'error': 'Missing authorization header', 'details': str(error)}), 401
+    
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        print(f"EXPIRED TOKEN: header={jwt_header}, payload={jwt_payload}")
+        return jsonify({'error': 'Token has expired'}), 401
+    
+    @jwt.revoked_token_loader
+    def revoked_token_callback(jwt_header, jwt_payload):
+        print(f"REVOKED TOKEN: header={jwt_header}, payload={jwt_payload}")
+        return jsonify({'error': 'Token has been revoked'}), 401
+    
     # Register blueprints
     from app.routes.auth import auth_bp
     from app.routes.restaurant import restaurant_bp
     from app.routes.cart import cart_bp
     from app.routes.order import order_bp
     from app.routes.ai_enhanced import ai_assistant_bp
+    from app.routes.address import address_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(restaurant_bp)
     app.register_blueprint(cart_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(ai_assistant_bp)
+    app.register_blueprint(address_bp)
     
     # Register error handlers
     register_error_handlers(app)
