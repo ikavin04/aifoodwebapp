@@ -46,16 +46,6 @@ export const restaurantAPI = {
   getMenu: (id) => api.get(`/restaurants/${id}/menu`),
 };
 
-// Address APIs
-export const addressAPI = {
-  getAll: () => api.get('/addresses'),
-  create: (data) => api.post('/addresses', data),
-  update: (id, data) => api.put(`/addresses/${id}`, data),
-  delete: (id) => api.delete(`/addresses/${id}`),
-  setDefault: (id) => api.put(`/addresses/${id}/set-default`),
-  setCurrent: (id) => api.put('/addresses/current', { address_id: id }),
-};
-
 // Order APIs
 export const orderAPI = {
   create: (data) => api.post('/orders', data),

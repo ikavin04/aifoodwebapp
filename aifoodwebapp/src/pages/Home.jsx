@@ -1,141 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { restaurantAPI, addressAPI } from '../services/api';
+import { restaurantAPI } from '../services/api';
 import Navbar from '../components/Navbar';
-import { Search, Star, Clock, DollarSign, TrendingUp, MapPin } from 'lucide-react';
+import { Search, Star, Clock, DollarSign, TrendingUp } from 'lucide-react';
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [currentCity, setCurrentCity] = useState('');
 
   useEffect(() => {
-    // Only fetch addresses if user has a token
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchCurrentAddress();
-    }
     fetchRestaurants();
-
-    // Listen for address changes
-    const handleAddressChange = (event) => {
-      const address = event.detail;
-      setCurrentCity(address.city);
-      fetchRestaurants(address.city);
-    };
-
-    window.addEventListener('addressChanged', handleAddressChange);
-    return () => window.removeEventListener('addressChanged', handleAddressChange);
   }, []);
 
-  const fetchCurrentAddress = async () => {
+  const fetchRestaurants = async () => {
+    setLoading(true);
     try {
-      const response = await addressAPI.getAll();
-      const addresses = response.data.addresses;
-      const defaultAddr = addresses.find(addr => addr.is_default) || addresses[0];
-      if (defaultAddr) {
-        setCurrentCity(defaultAddr.city);
-      }
+      const response = await restaurantAPI.getAll();
+      console.log('API Response:', response.data);
+      const data = response.data.restaurants || response.data || [];
+      console.log('Restaurants data:', data);
+      setRestaurants(Array.isArray(data) ? data : []);
     } catch (error) {
-      // Silently handle if not authenticated
-      if (error.response?.status !== 401) {
-        console.error('Error fetching current address:', error);
-      }
+      console.error('Error fetching restaurants:', error);
+      setRestaurants([]);
     }
+    setLoading(false);
   };
 
-  const fetchRestaurants = async (city = currentCity) => {
-    try {
-      setLoading(true);
-      const params = city ? { city } : {};
-      const response = await restaurantAPI.getAll(params);
-      setRestaurants(response.data.restaurants || response.data);
-    } catch (error) {
-      // Using mock data (backend not required)
-      // Mock data for development with cities
-      setRestaurants([
-        {
-          id: 1,
-          name: "Pizza Palace",
-          cuisine: "Italian",
-          city: "Mumbai",
-          rating: 4.5,
-          deliveryTime: "30-35 min",
-          priceRange: "₹200-400",
-          image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400",
-          trending: true
-        },
-        {
-          id: 2,
-          name: "Burger King",
-          cuisine: "American",
-          city: "Mumbai",
-          rating: 4.2,
-          deliveryTime: "25-30 min",
-          priceRange: "₹150-300",
-          image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
-          trending: false
-        },
-        {
-          id: 3,
-          name: "Biryani House",
-          cuisine: "Indian",
-          city: "Delhi",
-          rating: 4.7,
-          deliveryTime: "40-45 min",
-          priceRange: "₹250-500",
-          image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400",
-          trending: true
-        },
-        {
-          id: 4,
-          name: "Sushi Bar",
-          cuisine: "Japanese",
-          city: "Bangalore",
-          rating: 4.4,
-          deliveryTime: "35-40 min",
-          priceRange: "₹400-800",
-          image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400",
-          trending: false
-        },
-        {
-          id: 5,
-          name: "Taco Fiesta",
-          cuisine: "Mexican",
-          city: "Mumbai",
-          rating: 4.3,
-          deliveryTime: "30-35 min",
-          priceRange: "₹200-350",
-          image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400",
-          trending: true
-        },
-        {
-          id: 6,
-          name: "Thai Express",
-          cuisine: "Thai",
-          city: "Delhi",
-          rating: 4.6,
-          deliveryTime: "35-40 min",
-          priceRange: "₹300-600",
-          image: "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400",
-          trending: false
-        }
-      ].filter(r => !city || r.city.toLowerCase() === city.toLowerCase()));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredRestaurants = restaurants.filter(restaurant => {
-    const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredRestaurants = Array.isArray(restaurants) ? restaurants.filter(restaurant => {
+    const matchesSearch = restaurant.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (restaurant.cuisine_type || restaurant.cuisine)?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (filterType === 'trending') return matchesSearch && restaurant.trending;
+    if (filterType === 'trending') return matchesSearch && restaurant.rating >= 4.5;
     if (filterType === 'rating') return matchesSearch && restaurant.rating >= 4.5;
     return matchesSearch;
-  });
+  }) : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -147,15 +48,7 @@ const Home = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Order Food Online
           </h1>
-          <p className="text-gray-600 flex items-center gap-2">
-            {currentCity && (
-              <>
-                <MapPin className="w-4 h-4 text-cherry" />
-                Showing restaurants in <span className="font-semibold text-cherry">{currentCity}</span>
-              </>
-            )}
-            {!currentCity && "Discover the best food & drinks in your area"}
-          </p>
+          <p className="text-gray-600">Discover the best food & drinks in your area</p>
         </div>
 
         {/* Search and Filter */}
