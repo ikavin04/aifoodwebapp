@@ -46,6 +46,17 @@ const Checkout = () => {
     }
   };
 
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await addressAPI.delete(addressId);
+      setShowAddressModal(false);
+      await fetchAddresses();
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      alert(`Failed to delete address: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -58,13 +69,18 @@ const Checkout = () => {
 
     try {
       const orderData = {
-        items: cartItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          restaurantId: item.restaurant.id
-        })),
+        items: cartItems.map(item => {
+          const menuItem = item.menu_item || item;
+          const restaurant = item.restaurant || { id: menuItem.restaurant_id };
+          
+          return {
+            id: menuItem.id,
+            name: menuItem.name,
+            quantity: item.quantity,
+            price: menuItem.price,
+            restaurantId: restaurant.id
+          };
+        }),
         deliveryAddress: selectedAddress.full_address,
         addressId: selectedAddress.id,
         phone: selectedAddress.phone,
@@ -269,6 +285,7 @@ const Checkout = () => {
         isOpen={showAddressModal}
         onClose={() => setShowAddressModal(false)}
         onSave={handleSaveAddress}
+        onDelete={handleDeleteAddress}
       />
     </>
   );

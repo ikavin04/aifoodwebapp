@@ -184,20 +184,20 @@ const AddressPicker = ({ onAddressSelect, onAddNewAddress, onEditAddress }) => {
                 </div>
 
                 <div className="flex gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
+                  <div
                     onClick={(e) => handleEditAddress(e, address)}
-                    className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
                   >
                     <Edit2 className="w-3 h-3" />
                     Edit
-                  </button>
-                  <button
+                  </div>
+                  <div
                     onClick={(e) => handleDeleteAddress(e, address.id)}
-                    className="text-xs text-red-600 hover:text-red-700 flex items-center gap-1"
+                    className="text-xs text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     Delete
-                  </button>
+                  </div>
                 </div>
               </button>
             ))}

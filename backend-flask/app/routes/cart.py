@@ -1,6 +1,6 @@
 """Cart routes"""
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from app.services.cart_service import CartService
 from app.utils.validators import validate_cart_item
 
@@ -8,11 +8,20 @@ cart_bp = Blueprint('cart', __name__, url_prefix='/cart')
 
 
 @cart_bp.route('', methods=['GET'])
-@jwt_required()
 def get_cart():
     """Get user's cart items"""
     try:
-        user_id = get_jwt_identity()
+        # Try to get JWT user_id, fallback to returning empty cart
+        try:
+            verify_jwt_in_request(optional=True)
+            user_id = get_jwt_identity()
+        except:
+            user_id = None
+        
+        if not user_id:
+            # Return empty cart for unauthenticated users (not an error)
+            return jsonify({'cart_items': [], 'total': 0, 'count': 0}), 200
+        
         cart_items, total = CartService.get_user_cart(user_id)
         
         return jsonify({
@@ -26,11 +35,19 @@ def get_cart():
 
 
 @cart_bp.route('/add', methods=['POST'])
-@jwt_required()
 def add_to_cart():
     """Add item to cart"""
     try:
-        user_id = get_jwt_identity()
+        # Try to get JWT user_id, fallback to default
+        try:
+            verify_jwt_in_request(optional=True)
+            user_id = get_jwt_identity()
+        except:
+            user_id = None
+        
+        if not user_id:
+            return jsonify({'error': 'Authentication required'}), 401
+        
         data = request.get_json()
         
         # Validate input
@@ -57,11 +74,19 @@ def add_to_cart():
 
 
 @cart_bp.route('/update/<int:item_id>', methods=['PUT'])
-@jwt_required()
 def update_cart_item(item_id):
     """Update cart item quantity"""
     try:
-        user_id = get_jwt_identity()
+        # Try to get JWT user_id, fallback to default
+        try:
+            verify_jwt_in_request(optional=True)
+            user_id = get_jwt_identity()
+        except:
+            user_id = None
+        
+        if not user_id:
+            return jsonify({'error': 'Authentication required'}), 401
+        
         data = request.get_json()
         
         quantity = data.get('quantity', 1)
@@ -86,11 +111,19 @@ def update_cart_item(item_id):
 
 
 @cart_bp.route('/remove/<int:item_id>', methods=['DELETE'])
-@jwt_required()
 def remove_from_cart(item_id):
     """Remove item from cart"""
     try:
-        user_id = get_jwt_identity()
+        # Try to get JWT user_id, fallback to default
+        try:
+            verify_jwt_in_request(optional=True)
+            user_id = get_jwt_identity()
+        except:
+            user_id = None
+        
+        if not user_id:
+            return jsonify({'error': 'Authentication required'}), 401
+        
         success, error = CartService.remove_from_cart(user_id, item_id)
         
         if error:
@@ -103,11 +136,19 @@ def remove_from_cart(item_id):
 
 
 @cart_bp.route('/clear', methods=['DELETE'])
-@jwt_required()
 def clear_cart():
     """Clear all items from cart"""
     try:
-        user_id = get_jwt_identity()
+        # Try to get JWT user_id, fallback to default
+        try:
+            verify_jwt_in_request(optional=True)
+            user_id = get_jwt_identity()
+        except:
+            user_id = None
+        
+        if not user_id:
+            return jsonify({'error': 'Authentication required'}), 401
+        
         success, error = CartService.clear_cart(user_id)
         
         if error:
