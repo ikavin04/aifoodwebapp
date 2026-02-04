@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { authAPI } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [onLoginCallback, setOnLoginCallback] = useState(null);
 
   useEffect(() => {
     // Check if user is logged in
@@ -31,6 +32,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
       
+      // Trigger cart refresh callback if set
+      if (onLoginCallback) {
+        onLoginCallback();
+      }
+      
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
@@ -54,6 +60,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
       
+      // Trigger cart refresh callback if set
+      if (onLoginCallback) {
+        onLoginCallback();
+      }
+      
       return { success: true };
     } catch (error) {
       console.error('Registration error:', error);
@@ -67,12 +78,16 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.clear(); // Clear everything to be safe
+    localStorage.removeItem('cart'); // Clear localStorage cart
     setUser(null);
   };
 
+  const setLoginCallback = useCallback((callback) => {
+    setOnLoginCallback(() => callback);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, setLoginCallback }}>
       {children}
     </AuthContext.Provider>
   );

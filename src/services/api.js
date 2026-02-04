@@ -56,6 +56,15 @@ export const addressAPI = {
   setCurrent: (id) => api.put('/addresses/current', { address_id: id }),
 };
 
+// Cart APIs
+export const cartAPI = {
+  getCart: () => api.get('/cart'),
+  addItem: (data) => api.post('/cart/add', data),
+  updateItem: (itemId, data) => api.put(`/cart/update/${itemId}`, data),
+  removeItem: (itemId) => api.delete(`/cart/remove/${itemId}`),
+  clearCart: () => api.delete('/cart/clear'),
+};
+
 // Order APIs
 export const orderAPI = {
   create: (data) => api.post('/orders', data),

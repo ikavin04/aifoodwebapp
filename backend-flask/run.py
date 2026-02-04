@@ -9,9 +9,25 @@ config_name = os.getenv('FLASK_ENV', 'development')
 app = create_app(config_name)
 
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=5000,
-        debug=True,
-        use_reloader=False  # Disable auto-reload to prevent crashes
-    )
+    try:
+        print("🚀 Starting Flask server...")
+        import sys
+        sys.stdout.flush()
+        app.run(
+            host='0.0.0.0',
+            port=5000,
+            debug=True,
+            use_reloader=False,
+            threaded=True
+        )
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to exit...")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to exit...")

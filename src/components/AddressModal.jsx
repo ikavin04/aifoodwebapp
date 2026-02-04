@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, MapPin, Home as HomeIcon, Briefcase, Navigation } from 'lucide-react';
 
-const AddressModal = ({ isOpen, onClose, onSave, editAddress = null }) => {
+const AddressModal = ({ isOpen, onClose, onSave, editAddress = null, onDelete }) => {
   const initialFormData = {
     label: 'Home',
     address_line1: '',
@@ -55,6 +55,12 @@ const AddressModal = ({ isOpen, onClose, onSave, editAddress = null }) => {
     e.preventDefault();
     if (validate()) {
       onSave(formData);
+    }
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this address?')) {
+      onDelete(editAddress.id);
     }
   };
 
@@ -256,6 +262,15 @@ const AddressModal = ({ isOpen, onClose, onSave, editAddress = null }) => {
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4 border-t border-gray-200">
+            {editAddress && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="py-3 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+              >
+                Delete
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}

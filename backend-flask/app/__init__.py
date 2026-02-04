@@ -17,6 +17,20 @@ def create_app(config_name='default'):
     jwt.init_app(app)
     cors.init_app(app, origins=app.config['CORS_ORIGINS'])
     
+    # Add request logging middleware
+    @app.before_request
+    def log_request_info():
+        from flask import request
+        import sys
+        with open('f:/food app/aifoodwebapp/backend-flask/all_requests.log', 'a') as f:
+            f.write(f"\n{'='*50}\n")
+            f.write(f"REQUEST: {request.method} {request.path}\n")
+            f.write(f"Headers: {dict(request.headers)}\n")
+            if request.get_json(silent=True):
+                f.write(f"Body: {request.get_json()}\n")
+            f.write(f"{'='*50}\n")
+            f.flush()
+    
     # JWT error handlers
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
@@ -105,9 +119,16 @@ def register_error_handlers(app):
     
     @app.errorhandler(500)
     def internal_server_error(error):
+        import traceback
+        import sys
+        print(f"\n{'!'*50}", file=sys.stderr, flush=True)
+        print(f"500 ERROR: {error}", file=sys.stderr, flush=True)
+        traceback.print_exc(file=sys.stderr)
+        print(f"{'!'*50}\n", file=sys.stderr, flush=True)
         return jsonify({
             'error': 'Internal Server Error',
-            'message': 'An unexpected error occurred'
+            'message': str(error),
+            'details': traceback.format_exc()
         }), 500
     
     @jwt.expired_token_loader

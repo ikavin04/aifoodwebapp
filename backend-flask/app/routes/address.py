@@ -1,20 +1,28 @@
 """Address management routes"""
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 from app.services.address_service import AddressService
 
 address_bp = Blueprint('address', __name__, url_prefix='/addresses')
+
+
+def get_current_user_id():
+    """Helper to get current user ID from JWT or use default"""
+    try:
+        verify_jwt_in_request(optional=True)
+        jwt_identity = get_jwt_identity()
+        if jwt_identity is not None:
+            return jwt_identity
+    except:
+        pass
+    return 4  # Default fallback user_id
 
 
 @address_bp.route('', methods=['GET'])
 def get_user_addresses():
     """Get all addresses for the current user"""
     try:
-        # Try to get user_id from query params or use logged-in user from body
-        user_id = request.args.get('user_id')
-        if not user_id:
-            user_id = 4  # Default for development
-            
+        user_id = get_current_user_id()
         addresses = AddressService.get_user_addresses(user_id)
         
         return jsonify({
@@ -31,9 +39,7 @@ def add_address():
     """Add a new address for the current user"""
     try:
         data = request.get_json()
-        
-        # Get user_id from request body or default to 4 for development
-        user_id = data.get('user_id', 4)
+        user_id = get_current_user_id()
         
         # Validate required fields
         required_fields = ['label', 'address_line1', 'city', 'state', 'pincode']
@@ -78,16 +84,8 @@ def add_address():
 def update_address(address_id):
     """Update an existing address"""
     try:
-        try:
-            from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-            verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
-        except:
-            user_id = 17
-        if not user_id:
-            user_id = 17
+        user_id = get_current_user_id()
         data = request.get_json()
-        
         address, error = AddressService.update_address(
             address_id=address_id,
             user_id=user_id,
@@ -95,7 +93,7 @@ def update_address(address_id):
         )
         
         if error:
-            return jsonify({'error': error}), 400
+            return jsonify({'error': error, 'debug_info': {'user_id': user_id, 'address_id': address_id}}), 400
         
         return jsonify({
             'message': 'Address updated successfully',
@@ -110,14 +108,7 @@ def update_address(address_id):
 def delete_address(address_id):
     """Delete an address"""
     try:
-        try:
-            from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-            verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
-        except:
-            user_id = 17
-        if not user_id:
-            user_id = 17
+        user_id = get_current_user_id()
         
         success, error = AddressService.delete_address(address_id, user_id)
         
@@ -134,14 +125,7 @@ def delete_address(address_id):
 def set_default_address(address_id):
     """Set an address as default"""
     try:
-        try:
-            from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-            verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
-        except:
-            user_id = 17
-        if not user_id:
-            user_id = 17
+        user_id = get_current_user_id()
         
         address, error = AddressService.set_default_address(address_id, user_id)
         
@@ -161,19 +145,13 @@ def set_default_address(address_id):
 def set_current_address():
     """Set the current active address for browsing restaurants"""
     try:
-        try:
-            from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-            verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
-        except:
-            user_id = 17
-        if not user_id:
-            user_id = 17
+        user_id = get_current_user_id()
         data = request.get_json()
         
-        address_id = data.get('address_id')
+        address_id = data.get('address_id') if data else None
+        
         if not address_id:
-            return jsonify({'error': 'address_id is required'}), 400
+            return jsonify({'error': 'address_id is required', 'received_data': data}), 400
         
         success, error = AddressService.set_current_address(user_id, address_id)
         

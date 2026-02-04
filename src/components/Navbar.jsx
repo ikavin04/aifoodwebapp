@@ -72,6 +72,19 @@ const Navbar = () => {
     }
   };
 
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await addressAPI.delete(addressId);
+      setShowAddressModal(false);
+      setEditingAddress(null);
+      // Trigger event to refresh address picker
+      window.dispatchEvent(new Event('addressAdded'));
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      alert(`Failed to delete address: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -176,6 +189,7 @@ const Navbar = () => {
           setEditingAddress(null);
         }}
         onSave={handleSaveAddress}
+        onDelete={handleDeleteAddress}
         editAddress={editingAddress}
       />
     </>
